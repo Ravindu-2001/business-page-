@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vidihata – System design and solution making</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0F1B33; --navy2:#16264A; --gold:#C2A267; --goldsoft:#8F7440;
+  --bg:#F6F5F2; --surface:#FFFFFF; --ink:#0F1B33; --muted:#566079; --line:#DAD6CB;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0B1426;--surface:#121F3A;--ink:#F1EEE6;--muted:#A3ADC2;--line:#2A3858;--goldsoft:#C2A267}
+}
+:root[data-theme="dark"]{--bg:#0B1426;--surface:#121F3A;--ink:#F1EEE6;--muted:#A3ADC2;--line:#2A3858;--goldsoft:#C2A267}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:500;margin:0;line-height:1.1;letter-spacing:-.01em}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+header.top{position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:5}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:26px 0}
+.logo{font-family:var(--serif);font-size:28px;color:#F4F1E8;text-decoration:none;letter-spacing:.02em}
+.logo b{color:var(--gold);font-weight:500}
+.nav nav{display:flex;gap:30px}
+.nav nav a{color:#CBD2E2;text-decoration:none;font-size:15px}
+.nav nav a:hover{color:var(--gold)}
+@media(max-width:680px){.nav nav a:not(.keep){display:none}}
+
+.hero{background:var(--navy);color:#F4F1E8;position:relative;overflow:hidden;padding:170px 0 110px}
+.hero .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(44px,7vw,84px);color:#F7F4EC}
+.hero p.lead{margin-top:26px;max-width:46ch;color:#BDC6DA;font-size:19px}
+.cta-row{margin-top:38px;display:flex;gap:16px;flex-wrap:wrap}
+.btn{display:inline-block;padding:15px 30px;font:500 16px var(--sans);text-decoration:none;border:1px solid var(--gold);cursor:pointer;transition:background .2s,color .2s}
+.btn.solid{background:var(--gold);color:#101A2B}
+.btn.solid:hover{background:#D6B87C}
+.btn.ghost{background:transparent;color:#F4F1E8}
+.btn.ghost:hover{background:rgba(194,162,103,.14)}
+.diagram{width:100%;height:auto;display:block}
+.diagram .edge{stroke:var(--gold);stroke-width:1;fill:none;stroke-dasharray:420;stroke-dashoffset:420;animation:draw 2.6s ease forwards}
+.diagram .node{fill:var(--navy);stroke:var(--gold);stroke-width:1.2}
+.diagram .core{fill:var(--gold)}
+.diagram text{font-family:var(--sans);font-size:11px;fill:#BDC6DA}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){.diagram .edge{animation:none;stroke-dashoffset:0}html{scroll-behavior:auto}}
+@media(max-width:860px){.hero .grid{grid-template-columns:1fr}.hero{padding-top:140px}}
+
+section.block{padding:104px 0}
+.head{max-width:640px;margin-bottom:56px}
+.head h2{font-size:clamp(34px,4.5vw,54px)}
+.head p{margin-top:18px;color:var(--muted)}
+
+.services{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.svc{padding:36px 32px 40px 0;border-right:1px solid var(--line)}
+.svc:last-child{border-right:0}
+.svc+.svc{padding-left:32px}
+.svc h3{font-size:30px;margin-bottom:14px}
+.svc p{color:var(--muted)}
+.svc ul{list-style:none;padding:0;margin:20px 0 0}
+.svc li{padding:9px 0;border-top:1px solid var(--line);font-size:15px}
+@media(max-width:860px){.services{grid-template-columns:1fr}.svc,.svc+.svc{padding:32px 0;border-right:0;border-bottom:1px solid var(--line)}}
+
+.process{background:var(--surface)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:s}
+.step{padding:0 28px 0 0;position:relative}
+.step::before{counter-increment:s;content:counter(s);font-family:var(--serif);font-size:56px;color:var(--goldsoft);line-height:1;display:block;margin-bottom:14px}
+.step h3{font-size:26px;margin-bottom:10px}
+.step p{color:var(--muted);font-size:15.5px}
+@media(max-width:860px){.steps{grid-template-columns:1fr 1fr;gap:40px 20px}}
+@media(max-width:520px){.steps{grid-template-columns:1fr}}
+
+.promise{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.promise blockquote{margin:0;font-family:var(--serif);font-size:clamp(28px,3.6vw,42px);line-height:1.2}
+.facts{display:grid;gap:0}
+.fact{padding:22px 0;border-top:1px solid var(--line)}
+.fact:last-child{border-bottom:1px solid var(--line)}
+.fact h3{font-size:24px;margin-bottom:6px}
+.fact p{color:var(--muted);font-size:15.5px}
+@media(max-width:860px){.promise{grid-template-columns:1fr;gap:36px}}
+
+.contact{background:var(--navy);color:#F4F1E8}
+.contact .head p{color:#BDC6DA}
+.contact h2{color:#F7F4EC}
+form{display:grid;gap:18px;max-width:620px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+label{display:grid;gap:8px;font-size:14px;color:#BDC6DA}
+input,select,textarea{width:100%;background:transparent;border:0;border-bottom:1px solid #4A5A80;color:#F4F1E8;font:400 17px var(--sans);padding:10px 0;border-radius:0}
+select option{color:#101A2B}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:0;border-bottom-color:var(--gold)}
+.done{border:1px solid var(--gold);padding:26px;max-width:620px}
+.done h3{font-size:30px;margin-bottom:8px}
+footer{background:var(--navy);color:#8E9AB5;padding:30px 0;font-size:14px;border-top:1px solid #24345A}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const { useState } = React;
+const html = htm.bind(React.createElement);
+const CONTACT_EMAIL = "ravindudilhan492@gmail.com";
+
+const services = [
+  { t: "System design", d: "We map how your business actually runs, then design the structure that carries it: data, flows, roles and integrations.", l: ["Architecture and data models", "Workflow and process mapping", "Technology selection"] },
+  { t: "System creation", d: "We build the system we designed. Clean, documented and ready for your team to run without us.", l: ["Web and internal platforms", "Automation and integrations", "Testing and launch support"] },
+  { t: "Solution making", d: "A problem that doesn’t fit a product off the shelf gets a solution made for it, sized to your business.", l: ["Problem discovery", "Custom tools and prototypes", "Ongoing improvement"] }
+];
+const steps = [
+  { t: "Listen", d: "We learn your goals, your people and where the work gets stuck." },
+  { t: "Design", d: "You review a clear plan with structure, scope and timeline before anything is built." },
+  { t: "Build", d: "We deliver in stages you can see and test, so there are no surprises at the end." },
+  { t: "Support", d: "We train your team, hand over documentation and stay on for improvements." }
+];
+
+function Diagram() {
+  const n = [[60,60],[200,40],[330,90],[90,190],[230,170],[350,230],[150,300],[290,310]];
+  const e = [[0,1],[1,2],[0,3],[1,4],[2,5],[3,4],[4,5],[3,6],[4,6],[4,7],[5,7],[6,7]];
+  return html`<svg className="diagram" viewBox="0 0 410 360" role="img" aria-label="A connected system of nodes around a central core">
+    ${e.map(([a,b],i)=>html`<line key=${i} className="edge" x1=${n[a][0]} y1=${n[a][1]} x2=${n[b][0]} y2=${n[b][1]} style=${{animationDelay:(i*0.18)+"s"}}/>`)}
+    ${n.map(([x,y],i)=>html`<circle key=${i} className=${i===4?"core":"node"} cx=${x} cy=${y} r=${i===4?11:6}/>`)}
+    <text x="245" y="152">Your business</text>
+    <text x="66" y="52" dy="-14">Data</text>
+    <text x="200" y="26">People</text>
+    <text x="336" y="78" dy="-4">Process</text>
+    <text x="156" y="296" dy="20">Tools</text>
+  </svg>`;
+}
+
+function Contact() {
+  const [sent, setSent] = useState(false);
+  const [f, setF] = useState({ name: "", email: "", need: "System design", msg: "" });
+  const set = k => ev => setF({ ...f, [k]: ev.target.value });
+  const submit = ev => {
+    ev.preventDefault();
+    const body = encodeURIComponent(`Name: ${f.name}\nEmail: ${f.email}\nNeed: ${f.need}\n\n${f.msg}`);
+    window.open(`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("New project enquiry")}&body=${body}`, "_blank");
+    setSent(true);
+  };
+  if (sent) return html`<div className="done"><h3>Your message is ready to send</h3><p>Your email app should have opened with your details. Send it and we’ll reply within two working days.</p></div>`;
+  return html`<form onSubmit=${submit}>
+    <div className="row">
+      <label>Your name<input required value=${f.name} onChange=${set("name")} /></label>
+      <label>Email<input required type="email" value=${f.email} onChange=${set("email")} /></label>
+    </div>
+    <label>What do you need?
+      <select value=${f.need} onChange=${set("need")}>
+        <option>System design</option><option>System creation</option><option>A custom solution</option><option>Not sure yet</option>
+      </select>
+    </label>
+    <label>Tell us about the problem<textarea required value=${f.msg} onChange=${set("msg")}></textarea></label>
+    <div><button className="btn solid" type="submit">Send enquiry</button></div>
+  </form>`;
+}
+
+function App() {
+  return html`<main>
+    <header className="top"><div className="wrap nav">
+      <a className="logo" href="#top">Vidi<b>hata</b></a>
+      <nav><a href="#services">Services</a><a href="#process">Process</a><a href="#promise">Approach</a><a className="keep" href="#contact">Contact</a></nav>
+    </div></header>
+
+    <section className="hero" id="top"><div className="wrap grid">
+      <div>
+        <h1>Systems built with the care of fine craftsmanship</h1>
+        <p className="lead">Vidihata designs and creates systems for businesses that have outgrown spreadsheets and workarounds, and makes the solutions that nothing off the shelf can.</p>
+        <div className="cta-row">
+          <a className="btn solid" href="#contact">Start a project</a>
+          <a className="btn ghost" href="#services">See our services</a>
+        </div>
+      </div>
+      <${Diagram} />
+    </div></section>
+
+    <section className="block" id="services"><div className="wrap">
+      <div className="head"><h2>Three ways we work with you</h2><p>Hire us for one stage or for all of them. Each service stands on its own and fits together with the others.</p></div>
+      <div className="services">
+        ${services.map(s=>html`<article className="svc" key=${s.t}><h3>${s.t}</h3><p>${s.d}</p><ul>${s.l.map(x=>html`<li key=${x}>${x}</li>`)}</ul></article>`)}
+      </div>
+    </div></section>
+
+    <section className="block process" id="process"><div className="wrap">
+      <div className="head"><h2>How a project runs</h2><p>Four stages, each with something you can review before we move on.</p></div>
+      <div className="steps">${steps.map(s=>html`<div className="step" key=${s.t}><h3>${s.t}</h3><p>${s.d}</p></div>`)}</div>
+    </div></section>
+
+    <section className="block" id="promise"><div className="wrap promise">
+      <blockquote>A system should disappear into your work, so that your team notices only that things run smoothly.</blockquote>
+      <div className="facts">
+        <div className="fact"><h3>Designed around you</h3><p>No template is forced onto your business. We start from how your people really work.</p></div>
+        <div className="fact"><h3>Built to last</h3><p>Clear structure and full documentation mean the system can grow when you do.</p></div>
+        <div className="fact"><h3>Direct access</h3><p>You speak with the people designing and building your system, not an account manager.</p></div>
+      </div>
+    </div></section>
+
+    <section className="block contact" id="contact"><div className="wrap">
+      <div className="head"><h2>Tell us what you need to build</h2><p>Describe the problem in a few lines. We’ll reply within two working days with questions or a first suggestion.</p></div>
+      <${Contact} />
+    </div></section>
+
+    <footer><div className="wrap"><span>© 2026 Vidihata</span><span>System design · System creation · Solution making</span></div></footer>
+  </main>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>
